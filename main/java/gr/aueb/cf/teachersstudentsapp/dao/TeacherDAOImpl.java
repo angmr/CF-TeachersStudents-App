@@ -19,9 +19,10 @@ public class TeacherDAOImpl implements ITeacherDAO{
 		PreparedStatement pst = null;
 		
 		try {
-			String sql = "INSERT INTO TEACHERS (FIRSTNAME, LASTNAME) VALUES('"
-					+ teacher.getFname() + "', '" + teacher.getSname() + "')";
+			String sql = "INSERT INTO TEACHERS (FIRSTNAME, LASTNAME) VALUES(?, ?)";
 			pst = openConnection().prepareStatement(sql);
+			pst.setString(1, teacher.getFname());
+			pst.setString(2, teacher.getSname());
 			pst.executeUpdate();
 			
 			JOptionPane.showMessageDialog(null, "1 Record Inserted", "INSERT", JOptionPane.INFORMATION_MESSAGE);
@@ -42,8 +43,8 @@ public class TeacherDAOImpl implements ITeacherDAO{
 			String sql = "DELETE FROM TEACHERS WHERE ID = ?";
 			pst = openConnection().prepareStatement(sql);
 			pst.setInt(1, teacher.getId());
-			
 			pst.executeUpdate();
+			
 		}catch(SQLException e) {
 			e.printStackTrace();
 			throw e;
@@ -58,9 +59,11 @@ public class TeacherDAOImpl implements ITeacherDAO{
 		PreparedStatement pst = null;
 		
 		try {
-			String sql = "UPDATE TEACHERS SET FIRSTNAME = '" + newTeacher.getFname() + "', "
-					+ newTeacher.getSname() + "' WHERE ID = " + oldTeacher.getId();
+			String sql = "UPDATE TEACHERS SET FIRSTNAME = ?, ? WHERE ID = ?";
 			pst = openConnection().prepareStatement(sql);
+			pst.setString(1, newTeacher.getFname());
+			pst.setString(2, newTeacher.getSname());
+			pst.setInt(3, oldTeacher.getId());
 			pst.executeUpdate();
 		}catch(SQLException e) {
 			e.printStackTrace();
@@ -78,9 +81,9 @@ public class TeacherDAOImpl implements ITeacherDAO{
 		ResultSet rs = null;
 		
 		try {
-			String sql = "SELECT ID, FIRSTNAME, LASTNAME FROM TEACHERS WHERE LASTNAME LIKE '" + lastname + "%'";
-			
+			String sql = "SELECT ID, FIRSTNAME, LASTNAME FROM TEACHERS WHERE LASTNAME LIKE '?%'";
 			pst = openConnection().prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+			pst.setString(1, lastname);
 			rs = pst.executeQuery();
 			
 			while (rs.next()) {
@@ -103,15 +106,16 @@ public class TeacherDAOImpl implements ITeacherDAO{
 		}
 	}
 
-	@Override
+	@Override 
 	public Teacher getTeacherById(int id) throws SQLException {
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		Teacher teacher = null;
 		
 		try {
-			String sql = "SELECT * FROM TEACHERS WHERE ID = " + id;
+			String sql = "SELECT * FROM TEACHERS WHERE ID = ?";
 			pst = openConnection().prepareStatement(sql);
+			pst.setInt(1, id);
 			rs = pst.executeQuery();
 			
 			if (rs.next()) {
